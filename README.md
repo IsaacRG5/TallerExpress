@@ -180,27 +180,10 @@ Se utilizan los métodos `GET`, `POST`, `PATCH` y `DELETE`.
 
 
 
-## 9. GitHub y ZIP
+## 9. Datos del creador y GitHub 
 
+Nombre : Isaac David Ortiz Guzman.
+Clan : Puerta de Oro.
 
+https://github.com/IsaacRG5/TallerExpress.git
 
-## 10. Checklist final
-
-Antes de entregar, verificar:
-
-- [ ] Java 17+ configurado.
-- [ ] PostgreSQL funcionando.
-- [ ] `schema.sql` ejecutado.
-- [ ] Login probado.
-- [ ] CRUD de usuarios probado.
-- [ ] CRUD de repuestos probado.
-- [ ] CRUD de clientes probado.
-- [ ] CRUD de vehículos probado.
-- [ ] Registro de orden probado.
-- [ ] Actualización/finalización de orden probada.
-- [ ] Inventario comprobado antes y después de una orden.
-- [ ] Rollback comprobado con una operación inválida.
-- [ ] README completado con datos del Coder.
-- [ ] Capturas reales agregadas.
-- [ ] GitHub público creado.
-- [ ] ZIP final generado.
