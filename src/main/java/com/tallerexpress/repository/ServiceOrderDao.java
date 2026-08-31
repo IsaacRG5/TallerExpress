@@ -1,0 +1,3 @@
+package com.tallerexpress.repository;
+import com.tallerexpress.model.*; import java.sql.*; import java.util.*;
+public interface ServiceOrderDao { int insertOrder(Connection c,ServiceOrder o)throws SQLException; void insertPart(Connection c,int orderId,OrderPart p)throws SQLException; void updateStatusAndCost(Connection c,int orderId,OrderStatus status,java.math.BigDecimal cost,String diagnosis)throws SQLException; Optional<ServiceOrder> findById(int id)throws SQLException; List<ServiceOrder> findByVehicle(int vehicleId)throws SQLException; List<OrderPart> findParts(int orderId)throws SQLException; }

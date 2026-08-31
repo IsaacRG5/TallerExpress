@@ -1,0 +1,10 @@
+package com.tallerexpress.repository.impl;
+import com.tallerexpress.repository.ClientDao; import com.tallerexpress.model.*; import com.tallerexpress.config.Db; import java.sql.*; import java.util.*;
+public class ClientDaoJdbc implements ClientDao {
+ private Client map(ResultSet r)throws SQLException{return new Client(r.getInt("id"),r.getString("document"),r.getString("full_name"),r.getString("phone"),r.getString("email"),r.getString("address"),r.getBoolean("is_active"),r.getTimestamp("created_at").toLocalDateTime());}
+ public int insert(Client x)throws SQLException{try(Connection c=Db.getConnection();PreparedStatement p=c.prepareStatement("INSERT INTO clients(document,full_name,phone,email,address,is_active,created_at) VALUES(?,?,?,?,?,?,CURRENT_TIMESTAMP) RETURNING id")){p.setString(1,x.getDocument());p.setString(2,x.getFullName());p.setString(3,x.getPhone());p.setString(4,x.getEmail());p.setString(5,x.getAddress());p.setBoolean(6,x.isActive());try(ResultSet r=p.executeQuery()){r.next();return r.getInt(1);}}}
+ public Optional<Client> findById(int id)throws SQLException{try(Connection c=Db.getConnection();PreparedStatement p=c.prepareStatement("SELECT * FROM clients WHERE id=?")){p.setInt(1,id);try(ResultSet r=p.executeQuery()){return r.next()?Optional.of(map(r)):Optional.empty();}}}
+ public List<Client> findAll()throws SQLException{List<Client> l=new ArrayList<>();try(Connection c=Db.getConnection();Statement s=c.createStatement();ResultSet r=s.executeQuery("SELECT * FROM clients ORDER BY id")){while(r.next())l.add(map(r));}return l;}
+ public void update(Client x)throws SQLException{try(Connection c=Db.getConnection();PreparedStatement p=c.prepareStatement("UPDATE clients SET full_name=?,phone=?,email=?,address=?,is_active=? WHERE id=?")){p.setString(1,x.getFullName());p.setString(2,x.getPhone());p.setString(3,x.getEmail());p.setString(4,x.getAddress());p.setBoolean(5,x.isActive());p.setInt(6,x.getId());p.executeUpdate();}}
+ public void delete(int id)throws SQLException{try(Connection c=Db.getConnection();PreparedStatement p=c.prepareStatement("DELETE FROM clients WHERE id=?")){p.setInt(1,id);p.executeUpdate();}}
+}
