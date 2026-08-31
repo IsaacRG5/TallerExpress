@@ -1,4 +1,4 @@
-# TallerExpress — Prueba de desempeño M5.1
+# TallerExpress 
 
 Aplicación de escritorio para un taller mecánico desarrollada con **Java SE 17+**, **JOptionPane**, **JDBC + PostgreSQL** y arquitectura por capas.
 
