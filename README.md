@@ -1,289 +1,206 @@
 # TallerExpress — Prueba de desempeño M5.1
 
-Aplicación de escritorio en **Java SE 17+**, **JOptionPane**, **JDBC + PostgreSQL**, arquitectura por capas y excepciones personalizadas para la gestión de un taller mecánico.
+Aplicación de escritorio para un taller mecánico desarrollada con **Java SE 17+**, **JOptionPane**, **JDBC + PostgreSQL** y arquitectura por capas.
 
-El proyecto fue estructurado para cubrir el enunciado: repuestos, clientes, vehículos, usuarios/autenticación, órdenes de servicio, CRUD con JDBC, transacciones, validaciones, logs tipo HTTP y documentación. fileciteturn0file0L21-L28
+El sistema centraliza la gestión de repuestos, clientes, vehículos, usuarios y órdenes de servicio, con validaciones de negocio, excepciones personalizadas, autenticación por roles, logs tipo HTTP y transacciones JDBC.
 
 ## 1. Tecnologías
 
-- Java 17 o superior
+- Java SE 17+
 - Maven
-- PostgreSQL 16+
+- PostgreSQL 16
 - JDBC PostgreSQL
-- Swing/JOptionPane
-- POO, interfaces, herencia mediante excepciones especializadas, encapsulamiento, abstracción y polimorfismo
+- Swing / JOptionPane
+- Programación Orientada a Objetos
+- Docker Compose (opcional para PostgreSQL)
 
-## 2. Estructura
+## 2. Estructura del proyecto
 
 ```text
 TallerExpress/
 ├── pom.xml
-├── docker-compose.yml
 ├── .env.example
 ├── .gitignore
 ├── README.md
-├── docs/
-│   ├── diagrama-clases.md
-│   ├── diagrama-casos-uso.md
-│   └── screenshots/
-├── src/main/java/com/tallerexpress/
-│   ├── Main.java
-│   ├── controller/AppController.java
-│   ├── dao/                         # Interfaces DAO
-│   ├── dao/impl/                    # JDBC
-│   ├── decorator/                   # Decorator de usuario
-│   ├── exception/                   # Excepciones personalizadas
-│   ├── model/                       # Entidades y enums
-│   ├── service/                     # Interfaces de negocio
-│   ├── service/impl/                # Reglas de negocio
-│   └── util/                        # DB, hash, logs y tablas
-└── src/main/resources/db/schema.sql
+└── src/main/
+    ├── java/com/tallerexpress/
+    │   ├── TallerExpressApp.java
+    │   ├── config/
+    │   ├── controller/
+    │   ├── exception/
+    │   ├── model/
+    │   ├── repository/
+    │   │   └── impl/
+    │   ├── service/
+    │   │   └── impl/
+    │   └── view/
+    └── dockers/db/
+    └── dockers/db/
+        └──docker-compose.yml
+        ├── db
+             └── schema.sql
 ```
 
-La separación sigue las capas solicitadas por el enunciado: `controller`, `service`, `dao` y `model`. fileciteturn0file0L16-L26
+La separación corresponde a las capas del proyecto: `controller`, `service`, `repository` y `model`. `repository` contiene las interfaces DAO y sus implementaciones JDBC.
 
 ## 3. Requisitos previos
 
-1. Java 17+.
-2. Maven.
-3. PostgreSQL 16+ o Docker.
-4. Git.
+- JDK 17 o superior.
+- Maven 3.8+ o Maven integrado en IntelliJ IDEA.
+- PostgreSQL 16+ o Docker Desktop.
+- DBeaver, pgAdmin o `psql` para administrar la base de datos.
 
-## 4. Base de datos
+## 4. Configuración de PostgreSQL con Docker
 
-### Opción A — Docker
+Desde la carpeta raíz del proyecto:
 
 ```bash
 docker compose up -d
 ```
 
-El contenedor crea automáticamente la base `tallerexpress`.
+Configuración utilizada por `docker-compose.yml`:
 
-Después ejecuta `src/main/resources/db/schema.sql` desde DBeaver, pgAdmin o `psql`.
-
-### Opción B — PostgreSQL local
-
-Crea la base de datos `tallerexpress` y ejecuta el archivo `schema.sql`.
-
-Variables opcionales:
-
-```bash
-export TE_DB_URL="jdbc:postgresql://localhost:5432/tallerexpress"
-export TE_DB_USER="postgres"
-export TE_DB_PASSWORD="postgres"
+```text
+Base de datos: tallerexpress
+Usuario:       postgres
+Contraseña:    postgres
+Puerto:        5432
 ```
 
-Si no defines variables, la aplicación usa esos valores como predeterminados.
+Verificación:
 
-## 5. Usuario inicial
+```bash
+docker ps
+```
 
-- Usuario: `admin`
-- Contraseña: `admin123`
-- Rol: `ADMIN`
-- Estado: `ACTIVO`
+## 5. Ejecución desde IntelliJ IDEA
 
-La contraseña se almacena como SHA-256, no como texto plano.
+1. Abrir la carpeta del proyecto.
+2. Seleccionar JDK 17 o superior.
+3. Abrir la ventana **Maven**.
+4. Ejecutar `Lifecycle > clean`.
+5. Ejecutar `Lifecycle > compile`.
+6. Ejecutar la clase:
 
-## 6. Ejecución
+```text
+com.tallerexpress.TallerExpressApp
+```
+
+También puede ejecutarse mediante Maven:
 
 ```bash
 mvn clean compile
 mvn exec:java
 ```
 
-También puedes ejecutar `com.tallerexpress.Main` directamente desde NetBeans o IntelliJ.
-
-## 7. Funcionalidades implementadas
+## 6. Funcionalidades
 
 ### Repuestos
 
 - Registrar.
 - Editar.
 - Activar/desactivar.
+- Eliminar cuando no existan dependencias.
 - Listar.
 - Filtrar por categoría y proveedor.
 - Código de referencia único.
-- Stock total y disponible con validación.
-- Tabla alineada con `[ACTIVO]` / `[INACTIVO]`.
+- Validación de stock total y disponible.
+- Precio no negativo.
+- Listados en tablas de texto con `[ACTIVO]` / `[INACTIVO]`.
 
-El enunciado exige estos campos mínimos y el filtrado por categoría/proveedor. fileciteturn0file0L49-L56
+### Clientes
 
-### Clientes y vehículos
+- Registrar.
+- Editar.
+- Listar.
+- Eliminar cuando no existan vehículos u órdenes asociadas.
+- Validación de datos obligatorios.
 
-- Registrar clientes.
-- Editar clientes.
-- Activar/desactivar clientes.
-- Registrar vehículos asociados.
-- Placa única.
-- Historial de vehículos por cliente.
+### Vehículos
+
+- Registrar asociado a un cliente.
+- Editar.
+- Listar.
+- Eliminar cuando no tenga órdenes asociadas.
+- Consultar vehículos por cliente.
+- Validación de placa única.
 - Validación de cliente registrado.
 
 ### Usuarios y autenticación
 
-- Login.
+- Login con usuario y contraseña.
 - Roles `ADMIN` y `RECEPCIONISTA`.
+- Usuarios activos/inactivos.
 - CRUD de usuarios.
-- Logs `GET`, `POST`, `PATCH`, `DELETE` en consola.
-- Decorator `DefaultUserPropertiesDecorator` que agrega automáticamente:
-  - `role = RECEPCIONISTA`
-  - `status = ACTIVO`
-  - `createdAt = now()`
-
-El decorator permite cumplir el requisito de agregar propiedades por defecto sin modificar la lógica base de `UserServiceImpl`. fileciteturn0file0L64-L69
+- El usuario conectado no puede eliminarse a sí mismo.
+- Solo `ADMIN` gestiona usuarios.
+- Decorator para crear usuarios con `RECEPCIONISTA`, `ACTIVO` y `createdAt` por defecto.
 
 ### Órdenes de servicio
 
 - Cliente.
 - Vehículo.
-- Mecánico.
-- Fecha de ingreso.
-- Problema.
+- Mecánico responsable.
+- Fecha de ingreso automática.
+- Descripción del problema.
 - Diagnóstico.
 - Repuestos utilizados.
-- Estado.
-- Costo total.
-- Actualización de estado.
-- Historial por vehículo.
+- Estado: `ABIERTA`, `EN_PROCESO`, `FINALIZADA`, `CANCELADA`.
+- Actualización del estado.
+- Cálculo del costo mediante cantidad × precio unitario.
+- Historial de servicios por vehículo.
+- Control de stock.
+- Registro de movimientos de inventario.
 
-El costo se calcula como `cantidad × precioUnitario` y se suma para todos los repuestos. fileciteturn0file0L70-L82
 
-## 8. Transacciones JDBC
+## 7. POO aplicada
 
-El registro de una orden utiliza:
-
-```text
-setAutoCommit(false)
-       ↓
-insertar orden
-       ↓
-validar y descontar stock
-       ↓
-registrar repuestos de la orden
-       ↓
-registrar movimiento de inventario
-       ↓
-commit()
-
-Si ocurre un error:
-rollback()
-```
-
-La finalización/actualización también utiliza una transacción. El stock numérico se descuenta al registrar el consumo para evitar doble descuento; al finalizar se confirma el movimiento de inventario dentro de la misma transacción. Esto mantiene coherencia del inventario. El requisito del enunciado exige transacciones para registro y cierre de órdenes. fileciteturn0file0L95-L103
-
-Todos los DAO usan `try-with-resources` para liberar conexiones, statements y resultsets.
-
-## 9. Validaciones y excepciones
-
-Excepciones personalizadas:
-
-- `BusinessException`
-- `DuplicateException`
-- `StockException`
-- `AuthenticationException`
-
-Reglas:
-
-- Código de repuesto único.
-- Stock >= 0.
-- Stock disponible <= stock total.
-- Cliente activo para una orden.
-- Placa única.
-- Vehículo registrado y perteneciente al cliente.
-- Cantidades de repuestos > 0.
-- Orden válida.
-- Costo final >= 0.
-
-El enunciado exige captura de errores, mensajes en JOptionPane y detalles en consola. fileciteturn0file0L104-L116
-
-## 10. POO aplicada
-
-- **Encapsulamiento:** atributos privados + getters/setters.
+- **Encapsulamiento:** atributos privados y métodos de acceso en los modelos.
 - **Abstracción:** interfaces DAO y Service.
-- **Polimorfismo:** controladores trabajan con interfaces de servicios.
+- **Polimorfismo:** las implementaciones se utilizan mediante interfaces.
 - **Herencia:** excepciones especializadas heredan de `BusinessException`.
 - **Composición:** `ServiceOrder` contiene una lista de `OrderPart`.
-- **Decorator Pattern:** `DefaultUserPropertiesDecorator` envuelve `UserCreator`.
+- **Decorator:** `DefaultUserPropertiesDecorator` envuelve `UserCreator` para agregar propiedades por defecto.
 
-## 11. Diagramas
+## 8. Logs tipo HTTP
 
-- Diagrama de clases: `docs/diagrama-clases.md`
-- Diagrama de casos de uso: `docs/diagrama-casos-uso.md`
-
-GitHub renderiza los diagramas Mermaid incluidos en Markdown.
-
-## 12. Capturas de interfaz
-
-La carpeta `docs/screenshots/` contiene vistas de referencia de las pantallas JOptionPane que debe mostrar la aplicación:
-
-- `01-login.png`
-- `02-menu-principal.png`
-- `03-listado-repuestos.png`
-
-Para una entrega académica final, se recomienda reemplazar estas vistas de referencia por capturas tomadas directamente al ejecutar el proyecto en el equipo del Coder.
-
-## 13. Logs de llamadas HTTP simuladas
-
-Ejemplos que aparecen en consola:
+Las operaciones principales generan trazas en consola, por ejemplo:
 
 ```text
-[2026-08-31T13:30:00] POST /login -> admin
-[2026-08-31T13:31:00] POST /repuestos -> FILTRO-001
-[2026-08-31T13:32:00] PATCH /repuestos/1 -> FILTRO-001
-[2026-08-31T13:33:00] GET /repuestos -> /frenos
-[2026-08-31T13:34:00] POST /ordenes -> 10
-[2026-08-31T13:35:00] PATCH /ordenes/10 -> estado=FINALIZADA
+[fecha] POST /login -> admin
+[fecha] POST /repuestos -> FILTRO-001
+[fecha] GET /repuestos -> /frenos
+[fecha] PATCH /repuestos/1 -> FILTRO-001
+[fecha] DELETE /repuestos/1 ->
+[fecha] POST /ordenes -> 10
+[fecha] PATCH /ordenes/10 -> estado=FINALIZADA, costo=250000
 ```
 
-## 14. Entrega
+Se utilizan los métodos `GET`, `POST`, `PATCH` y `DELETE`.
 
-Antes de subir a GitHub:
 
-```bash
-git init
-git add .
-git commit -m "feat: implement TallerExpress M5.1"
-git branch -M main
-git remote add origin TU_REPOSITORIO
- git push -u origin main
-```
 
-Luego comprime la carpeta completa como `TallerExpress.zip`.
+## 9. GitHub y ZIP
 
-## 15. Datos del Coder
 
-Completar antes de entregar:
 
-- Nombre: **[TU NOMBRE]**
-- Clan: **[TU CLAN]**
-- Correo: **[TU CORREO]**
-- Documento: **[TU DOCUMENTO]**
-- GitHub: **[URL DEL REPOSITORIO]**
+## 10. Checklist final
 
-## 16. Checklist de la prueba
+Antes de entregar, verificar:
 
-- [x] Java SE 17+
-- [x] JOptionPane
-- [x] JDBC
-- [x] PostgreSQL
-- [x] Arquitectura por capas
-- [x] DAO interfaces
-- [x] SELECT / INSERT / UPDATE / DELETE
-- [x] Repuestos
-- [x] Clientes
-- [x] Vehículos
-- [x] Usuarios
-- [x] Login y roles
-- [x] Decorator para propiedades por defecto
-- [x] Órdenes de servicio
-- [x] Historial por vehículo
-- [x] Cálculo de costo
-- [x] Transacciones y rollback
-- [x] try-with-resources
-- [x] Excepciones personalizadas
-- [x] Validaciones de negocio
-- [x] Logs tipo HTTP
-- [x] Tablas en JOptionPane
-- [x] README
-- [x] Diagrama de clases
-- [x] Diagrama de casos de uso
-- [x] Capturas de interfaz de referencia
+- [ ] Java 17+ configurado.
+- [ ] PostgreSQL funcionando.
+- [ ] `schema.sql` ejecutado.
+- [ ] Login probado.
+- [ ] CRUD de usuarios probado.
+- [ ] CRUD de repuestos probado.
+- [ ] CRUD de clientes probado.
+- [ ] CRUD de vehículos probado.
+- [ ] Registro de orden probado.
+- [ ] Actualización/finalización de orden probada.
+- [ ] Inventario comprobado antes y después de una orden.
+- [ ] Rollback comprobado con una operación inválida.
+- [ ] README completado con datos del Coder.
+- [ ] Capturas reales agregadas.
+- [ ] GitHub público creado.
+- [ ] ZIP final generado.
