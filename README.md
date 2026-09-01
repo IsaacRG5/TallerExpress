@@ -1,20 +1,20 @@
 # TallerExpress 
 
-Aplicación de escritorio para un taller mecánico desarrollada con **Java SE 17+**, **JOptionPane**, **JDBC + PostgreSQL** y arquitectura por capas.
+A desktop application for an auto repair shop developed using **Java SE 17+**, **JOptionPane**, **JDBC + PostgreSQL**, and a layered architecture.
 
-El sistema centraliza la gestión de repuestos, clientes, vehículos, usuarios y órdenes de servicio, con validaciones de negocio, excepciones personalizadas, autenticación por roles, logs tipo HTTP y transacciones JDBC.
+The system centralizes the management of parts, customers, vehicles, users, and service orders, with business validations, custom 
 
 ## 1. Tecnologías
 
 - Java SE 17+
 - Maven
 - PostgreSQL 16
-- JDBC PostgreSQL
+- JDBC for PostgreSQL
 - Swing / JOptionPane
-- Programación Orientada a Objetos
-- Docker Compose (opcional para PostgreSQL)
+- Object-Oriented Programming
+- Docker Compose 
 
-## 2. Estructura del proyecto
+## 2. Project Structure
 
 ```text
 TallerExpress/
@@ -41,149 +41,145 @@ TallerExpress/
              └── schema.sql
 ```
 
-La separación corresponde a las capas del proyecto: `controller`, `service`, `repository` y `model`. `repository` contiene las interfaces DAO y sus implementaciones JDBC.
+## 3. Prerequisites
 
-## 3. Requisitos previos
+- JDK 17 or later.
+- Maven 3.8+ or Maven integrated into IntelliJ IDEA.
+- PostgreSQL 16+ or Docker Desktop.
+- DBeaver, pgAdmin, or `psql` for managing the database.
 
-- JDK 17 o superior.
-- Maven 3.8+ o Maven integrado en IntelliJ IDEA.
-- PostgreSQL 16+ o Docker Desktop.
-- DBeaver, pgAdmin o `psql` para administrar la base de datos.
+## 4. Configuring PostgreSQL with Docker
 
-## 4. Configuración de PostgreSQL con Docker
-
-Desde la carpeta raíz del proyecto:
+From the project root directory:
 
 ```bash
 docker compose up -d
 ```
 
-Configuración utilizada por `docker-compose.yml`:
+Configuration used by `docker-compose.yml`:
 
 ```text
-Base de datos: tallerexpress
-Usuario:       postgres
-Contraseña:    postgres
-Puerto:        5432
+Database: tallerexpress
+Username:       postgres
+Password:    postgres
+Port:        5432
 ```
 
-Verificación:
+Verification:
 
 ```bash
 docker ps
 ```
 
-## 5. Ejecución desde IntelliJ IDEA
+## 5. Running from IntelliJ IDEA
 
-1. Abrir la carpeta del proyecto.
-2. Seleccionar JDK 17 o superior.
-3. Abrir la ventana **Maven**.
-4. Ejecutar `Lifecycle > clean`.
-5. Ejecutar `Lifecycle > compile`.
-6. Ejecutar la clase:
+1. Open the project folder.
+2. Select JDK 17 or higher.
+3. Open the **Maven** window.
+4. Run `Lifecycle > clean`.
+5. Run `Lifecycle > compile`.
+6. Run the class:
 
 ```text
 com.tallerexpress.TallerExpressApp
 ```
 
-También puede ejecutarse mediante Maven:
+It can also be run using Maven:
 
 ```bash
 mvn clean compile
 mvn exec:java
 ```
 
-## 6. Funcionalidades
+## 6. Features
 
-### Repuestos
+### Replacement Parts
 
-- Registrar.
-- Editar.
-- Activar/desactivar.
-- Eliminar cuando no existan dependencias.
-- Listar.
-- Filtrar por categoría y proveedor.
-- Código de referencia único.
-- Validación de stock total y disponible.
-- Precio no negativo.
-- Listados en tablas de texto con `[ACTIVO]` / `[INACTIVO]`.
+- Add.
+- Edit.
+- Activate/deactivate.
+- Delete when there are no dependencies.
+- List.
+- Filter by category and supplier.
+- Unique reference code.
+- Validation of total and available stock.
+- Non-negative price.
+- Listed in text tables with `[ACTIVE]` / `[INACTIVE]`.
 
-### Clientes
+### Customers
 
-- Registrar.
-- Editar.
-- Listar.
-- Eliminar cuando no existan vehículos u órdenes asociadas.
-- Validación de datos obligatorios.
+- Add.
+- Edit.
+- List.
+- Delete when there are no associated vehicles or orders.
+- Validation of required fields.
 
-### Vehículos
+### Vehicles
 
-- Registrar asociado a un cliente.
-- Editar.
-- Listar.
-- Eliminar cuando no tenga órdenes asociadas.
-- Consultar vehículos por cliente.
-- Validación de placa única.
-- Validación de cliente registrado.
+- Add a vehicle associated with a customer.
+- Edit.
+- List.
+- Delete when there are no associated orders.
+- View vehicles by customer.
+- Validate unique license plate.
+- Validate registered customer.
 
-### Usuarios y autenticación
+### Users and Authentication
 
-- Login con usuario y contraseña.
-- Roles `ADMIN` y `RECEPCIONISTA`.
-- Usuarios activos/inactivos.
-- CRUD de usuarios.
-- El usuario conectado no puede eliminarse a sí mismo.
-- Solo `ADMIN` gestiona usuarios.
-- Decorator para crear usuarios con `RECEPCIONISTA`, `ACTIVO` y `createdAt` por defecto.
+- Login with username and password.
+- `ADMIN` and `RECEPTIONIST` roles.
+- Active/inactive users.
+- User CRUD operations.
+- The logged-in user cannot delete their own account.
+- Only `ADMIN` can manage users.
+- Decorator to create users with `RECEPTIONIST`, `ACTIVE`, and `createdAt` as default values.
 
-### Órdenes de servicio
+### Service Orders
 
-- Cliente.
-- Vehículo.
-- Mecánico responsable.
-- Fecha de ingreso automática.
-- Descripción del problema.
-- Diagnóstico.
-- Repuestos utilizados.
-- Estado: `ABIERTA`, `EN_PROCESO`, `FINALIZADA`, `CANCELADA`.
-- Actualización del estado.
-- Cálculo del costo mediante cantidad × precio unitario.
-- Historial de servicios por vehículo.
-- Control de stock.
-- Registro de movimientos de inventario.
+- Customer.
+- Vehicle.
+- Mechanic in charge.
+- Automatic check-in date.
+- Problem description.
+- Diagnosis.
+- Parts used.
+- Status: `OPEN`, `IN_PROCESS`, `COMPLETED`, `CANCELED`.
+- Status update.
+- Cost calculation using quantity × unit price.
+- Service history by vehicle.
+- Inventory control.
+- Inventory transaction log.
 
 
-## 7. POO aplicada
+## 7. Applied OOP
 
-- **Encapsulamiento:** atributos privados y métodos de acceso en los modelos.
-- **Abstracción:** interfaces DAO y Service.
-- **Polimorfismo:** las implementaciones se utilizan mediante interfaces.
-- **Herencia:** excepciones especializadas heredan de `BusinessException`.
-- **Composición:** `ServiceOrder` contiene una lista de `OrderPart`.
-- **Decorator:** `DefaultUserPropertiesDecorator` envuelve `UserCreator` para agregar propiedades por defecto.
+- **Encapsulation:** private attributes and accessor methods in the models.
+- **Abstraction:** DAO and Service interfaces.
+- **Polymorphism:** implementations are used via interfaces.
+- **Inheritance:** Specialized exceptions inherit from `BusinessException`.
+- **Composition:** `ServiceOrder` contains a list of `OrderPart` objects.
+- **Decorator:** `DefaultUserPropertiesDecorator` wraps `UserCreator` to add default properties.
 
-## 8. Logs tipo HTTP
+## 8. HTTP Logs
 
-Las operaciones principales generan trazas en consola, por ejemplo:
+Major operations generate console logs, for example:
 
 ```text
-[fecha] POST /login -> admin
-[fecha] POST /repuestos -> FILTRO-001
-[fecha] GET /repuestos -> /frenos
-[fecha] PATCH /repuestos/1 -> FILTRO-001
-[fecha] DELETE /repuestos/1 ->
-[fecha] POST /ordenes -> 10
-[fecha] PATCH /ordenes/10 -> estado=FINALIZADA, costo=250000
+[date] POST /login -> admin
+[date] POST /parts -> FILTER-001
+[date] GET /parts -> /brakes
+[date] PATCH /parts/1 -> FILTER-001
+[date] DELETE /parts/1 ->
+[date] POST /orders -> 10
+[date] PATCH /orders/10 -> status=COMPLETED, cost=250000
 ```
 
-Se utilizan los métodos `GET`, `POST`, `PATCH` y `DELETE`.
+The `GET`, `POST`, `PATCH`, and `DELETE` methods are used.
 
+## 9. Creator Information and GitHub 
 
-
-## 9. Datos del creador y GitHub 
-
-Nombre : Isaac David Ortiz Guzman.
-Clan : Puerta de Oro.
+Name: Isaac David Ortiz Guzman.
+Clan: Puerta de Oro.
 
 https://github.com/IsaacRG5/TallerExpress.git
 
